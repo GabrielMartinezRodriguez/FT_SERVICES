@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-deployment
+  labels:
+    app: influxdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+      - name: influxdb
+        image: gabimr19/ft_services:influxdb
+        ports:
+        - containerPort: 8086
+        volumeMounts:
+        - mountPath: /root/.influxdb
+          name: influxdb-volume
+      volumes:
+      - name: influxdb-volume
+        hostPath:
+          path: /home/kali/volumes/influxdb
+          type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: influxdb-service
+spec:
+  selector:
+    app: influxdb
+  ports:
+    - port: 8086
+      targetPort: 8086
+

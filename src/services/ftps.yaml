@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ftps-deployment
+  labels:
+    app: ftps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ftps
+  template:
+    metadata:
+      labels:
+        app: ftps
+    spec:
+      containers:
+      - name: ftps
+        image: gabimr19/ft_services:ftps
+        ports:
+        - containerPort: 21
+          name: active
+        - containerPort: 30021
+          name: passive
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ftps-service
+  annotations:
+    metallb.universe.tf/allow-shared-ip: shared-ip
+spec:
+  selector:
+    app: ftps
+  ports:
+    - port: 21
+      targetPort: 21
+      name: active
+    - port: 30021
+      targetPort: 30021
+      name: passive
+  type: LoadBalancer
